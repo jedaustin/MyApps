@@ -84,7 +84,8 @@ function handleLogin() {
       if (response.ok) {
         window.location.href = '/dashboard';
       } else {
-        errorAlert.textContent = 'Invalid username or password.';
+        const result = await response.json();
+        errorAlert.textContent = result.error || 'Invalid username or password.';
         errorAlert.classList.remove('d-none');
       }
     } catch (error) {
