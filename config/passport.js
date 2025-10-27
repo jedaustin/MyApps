@@ -72,9 +72,12 @@ passport.use(
 
 // --- Local Strategy (Email/Password) ---
 passport.use(
-  new LocalStrategy(async (username, password, done) => {
+  new LocalStrategy({
+    usernameField: 'email' // Tell Passport to use the 'email' field
+  }, async (email, password, done) => {
     try {
-      const user = await User.findOne({ username: username.toLowerCase() }).select('+password');
+      // Find user by email, which is also their username
+      const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' });
       }
