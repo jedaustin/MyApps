@@ -63,13 +63,18 @@ function displayUrls() {
               <i class="fas fa-clock me-1"></i>${formatDate(url.createdAt)}
             </small>
           </p>
-          <div class="btn-group w-100 mt-3">
-            <button class="btn btn-sm btn-outline-primary" onclick="openEditModal('${url._id}')">
-              <i class="fas fa-edit me-1"></i>Edit
-            </button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteUrl('${url._id}')">
-              <i class="fas fa-trash me-1"></i>Delete
-            </button>
+          <div class="d-grid gap-2 mt-3">
+            <a href="${url.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+              <i class="fas fa-rocket me-2"></i>Launch
+            </a>
+            <div class="btn-group">
+              <button class="btn btn-sm btn-outline-secondary w-100" onclick="openEditModal('${url._id}')">
+                <i class="fas fa-edit me-1"></i>Edit
+              </button>
+              <button class="btn btn-sm btn-outline-danger w-100" onclick="deleteUrl('${url._id}')">
+                <i class="fas fa-trash me-1"></i>Delete
+              </button>
+            </div>
           </div>
         </div>
       </div>
