@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       minlength: [3, 'Username must be at least 3 characters'],
       maxlength: [50, 'Username cannot exceed 50 characters'],
-      match: [/^[a-z0-9_]+$/, 'Username can only contain lowercase letters, numbers, and underscores']
+      match: [/^\S+@\S+\.\S+$/, 'Username must be a valid email address']
     },
     email: {
       type: String,
@@ -61,4 +61,3 @@ userSchema.methods.toJSON = function () {
 const User = mongoose.model('User', userSchema);
 
 export default User;
-

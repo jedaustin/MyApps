@@ -1,74 +1,77 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as LocalStrategy } from 'passport-local';
-import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import User from '../models/User.js';
 
-// Google OAuth 2.0 Strategy
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  passport.use(
-    new GoogleStrategy(
-      {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/auth/google/callback'
-      },
-      async (accessToken, refreshToken, profile, done) => {
-        try {
-          // Check if user exists with this Google ID
-          let user = await User.findOne({ googleId: profile.id });
+// --- JWT Generation ---
+export const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: '7d'
+  });
+};
 
-          if (user) {
-            return done(null, user);
-          }
+// --- Google OAuth 2.0 Strategy ---
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        // Find existing user by Google ID
+        let user = await User.findOne({ googleId: profile.id });
 
-          // Check if user exists with this email
-          user = await User.findOne({ email: profile.emails[0].value });
-
-          if (user) {
-            // Link Google account to existing user
-            user.googleId = profile.id;
-            await user.save();
-            return done(null, user);
-          }
-
-          // Create new user
-          user = await User.create({
-            name: profile.displayName,
-            username: profile.emails[0].value.split('@')[0],
-            email: profile.emails[0].value,
-            googleId: profile.id,
-            password: null // Google users don't have local password
-          });
-
+        if (user) {
           return done(null, user);
-        } catch (error) {
-          return done(error, null);
         }
-      }
-    )
-  );
-}
 
-// Local Strategy for email/password authentication
+        // If no user, find by email to link accounts
+        const googleEmail = profile.emails?.[0]?.value;
+        if (!googleEmail) {
+          return done(new Error('Google account has no email address.'), null);
+        }
+
+        user = await User.findOne({ email: googleEmail });
+
+        if (user) {
+          // Link Google ID to existing local account
+          user.googleId = profile.id;
+          await user.save();
+          return done(null, user);
+        }
+
+        // If no user exists at all, create a new one
+        const newUser = await User.create({
+          googleId: profile.id,
+          name: profile.displayName,
+          email: googleEmail,
+          username: googleEmail // Use email as username
+        });
+
+        return done(null, newUser);
+      } catch (error) {
+        return done(error, false);
+      }
+    }
+  )
+);
+
+// --- Local Strategy (Email/Password) ---
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
-      const user = await User.findOne({ username });
-      
+      const user = await User.findOne({ username: username.toLowerCase() }).select('+password');
       if (!user) {
-        return done(null, false, { message: 'Invalid username or password' });
+        return done(null, false, { message: 'Incorrect username.' });
       }
 
-      if (!user.password) {
-        return done(null, false, { message: 'Please login with Google or reset your password' });
-      }
-
-      const isValidPassword = await bcrypt.compare(password, user.password);
-      
-      if (!isValidPassword) {
-        return done(null, false, { message: 'Invalid username or password' });
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return done(null, false, { message: 'Incorrect password.' });
       }
 
       return done(null, user);
@@ -78,45 +81,14 @@ passport.use(
   })
 );
 
-// Serialize user for session
+// --- Session Management ---
 passport.serializeUser((user, done) => {
-  done(null, user._id);
+  done(null, user.id);
 });
 
-// Deserialize user from session
 passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id).select('-password');
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
+  const user = await User.findById(id);
+  done(null, user);
 });
 
 export { passport };
-
-// JWT authentication middleware
-export const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
-    if (err) {
-      return res.status(403).json({ error: 'Invalid or expired token' });
-    }
-    req.user = user;
-    next();
-  });
-};
-
-// Generate JWT token
-export const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || 'your-secret-key', {
-    expiresIn: '7d'
-  });
-};
-
