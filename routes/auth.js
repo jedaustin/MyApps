@@ -102,22 +102,25 @@ router.post(
     body('email').trim().isEmail().withMessage('A valid email is required'),
     body('password').notEmpty().withMessage('Password is required')
   ],
-  passport.authenticate('local', { failureRedirect: '/login' }),
   (req, res) => {
-    try {
-      const token = generateToken(req.user._id);
-      req.session.token = token;
-      req.session.userId = req.user._id;
-      
-      res.json({
-        message: 'Login successful',
-        userId: req.user._id,
-        token
+    passport.authenticate('local', (err, user, info) => {
+      if (err) {
+        console.error('Login error:', err);
+        return res.status(500).json({ error: 'Login failed due to a server error.' });
+      }
+      if (!user) {
+        return res.status(401).json({ error: info.message || 'Invalid credentials.' });
+      }
+      req.login(user, (err) => {
+        if (err) {
+          return res.status(500).json({ error: 'Session creation failed.' });
+        }
+        const token = generateToken(req.user._id);
+        req.session.token = token;
+        req.session.userId = req.user._id;
+        return res.json({ message: 'Login successful', userId: req.user._id, token });
       });
-    } catch (error) {
-      console.error('Login error:', error);
-      res.status(500).json({ error: 'Login failed' });
-    }
+    })(req, res);
   }
 );
 
