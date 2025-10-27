@@ -1,6 +1,6 @@
-# WebLauncher
+# MyApps
 
-A full-stack Node.js web application for managing bookmarks with user authentication. Features include user registration, Google OAuth 2.0 login, and CRUD operations for URL management.
+A full-stack Node.js web application for managing bookmarks with user authentication. Features include user registration, Google OAuth 2.0 login, and CRUD operations for URL management, all running in Docker.
 
 ## Features
 
@@ -322,4 +322,3 @@ MIT
 ## Support
 
 For issues and questions, please open an issue on GitHub.
-

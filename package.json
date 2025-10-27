@@ -1,5 +1,5 @@
 {
-  "name": "weblauncher",
+  "name": "myapps",
   "version": "1.0.0",
   "description": "A full-stack Node.js web application for managing URLs with authentication",
   "type": "module",
@@ -37,4 +37,3 @@
     "prettier": "^3.1.1"
   }
 }
-
