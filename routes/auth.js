@@ -37,13 +37,16 @@ router.post(
     body('name')
       .trim()
       .isLength({ min: 2, max: 100 })
-      .withMessage('Name must be between 2 and 100 characters'),
-    body('username')
+      .withMessage('Name must be 2-100 characters'),
+    body('email')
       .trim()
       .toLowerCase()
-      .isLength({ min: 3, max: 50 })
-      .matches(/^[a-z0-9_]+$/)
-      .withMessage('Username must be 3-50 characters and contain only lowercase letters, numbers, and underscores'),
+      .isEmail()
+      .withMessage('Please provide a valid email address')
+      .custom((value, { req }) => {
+        req.body.username = value; // Set username to be the same as email
+        return true;
+      }),
     body('password')
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters')
@@ -55,16 +58,17 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { name, username, password } = req.body;
+      const { name, email, username, password } = req.body;
 
       // Check if user already exists
-      const existingUser = await User.findOne({ username });
+      const existingUser = await User.findOne({ email });
       if (existingUser) {
-        return res.status(400).json({ error: 'Username already exists' });
+        return res.status(400).json({ error: 'An account with this email already exists' });
       }
 
       // Create new user
       const user = await User.create({
+        email,
         name,
         username,
         password
@@ -142,4 +146,3 @@ router.get('/me', (req, res) => {
 });
 
 export default router;
-
