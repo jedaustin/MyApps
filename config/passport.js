@@ -82,6 +82,11 @@ passport.use(
         return done(null, false, { message: 'Incorrect username.' });
       }
 
+      // Check if the user signed up with Google and has no local password
+      if (!user.password) {
+        return done(null, false, { message: 'This account was created using Google. Please log in with Google.' });
+      }
+
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return done(null, false, { message: 'Incorrect password.' });
