@@ -23,6 +23,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust the reverse proxy (Nginx) to handle secure connections
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: false, // Allow inline scripts for simplicity
@@ -149,4 +152,3 @@ app.use((req, res) => {
 });
 
 export default app;
-
