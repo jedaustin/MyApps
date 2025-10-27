@@ -52,7 +52,7 @@ function displayUrls() {
           ${url.pinned ? '<i class="fas fa-thumbtack text-primary position-absolute top-0 end-0 mt-2 me-3" title="Pinned"></i>' : ''}
           <h5 class="card-title">
             <i class="fas fa-link me-2"></i>
-            <a href="${url.url}" target="weblauncher_tab" rel="noopener noreferrer" class="text-decoration-none">
+            <a href="${url.url}" target="weblauncher_tab" rel="noreferrer" class="text-decoration-none">
               ${escapeHtml(url.description)}
             </a>
           </h5>
@@ -65,7 +65,7 @@ function displayUrls() {
             </small>
           </p>
           <div class="d-grid gap-2 mt-3">
-            <a href="${url.url}" target="weblauncher_tab" rel="noopener noreferrer" class="btn btn-primary btn-lg">
+            <a href="${url.url}" target="weblauncher_tab" rel="noreferrer" class="btn btn-primary btn-lg">
               <i class="fas fa-rocket me-2"></i>Launch
             </a>
             <div class="btn-group">
