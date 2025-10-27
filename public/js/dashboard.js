@@ -48,7 +48,8 @@ function displayUrls() {
   container.innerHTML = urls.map((url, index) => `
     <div class="col-md-6 col-lg-4" style="animation-delay: ${index * 50}ms;">
       <div class="card url-card shadow-sm">
-        <div class="card-body">
+        <div class="card-body position-relative">
+          ${url.pinned ? '<i class="fas fa-thumbtack text-primary position-absolute top-0 end-0 mt-2 me-3" title="Pinned"></i>' : ''}
           <h5 class="card-title">
             <i class="fas fa-link me-2"></i>
             <a href="${url.url}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
@@ -68,6 +69,9 @@ function displayUrls() {
               <i class="fas fa-rocket me-2"></i>Launch
             </a>
             <div class="btn-group">
+              <button class="btn btn-sm btn-outline-secondary w-100" onclick="togglePin('${url._id}')">
+                <i class="fas fa-thumbtack me-1"></i>${url.pinned ? 'Unpin' : 'Pin'}
+              </button>
               <button class="btn btn-sm btn-outline-secondary w-100" onclick="openEditModal('${url._id}')">
                 <i class="fas fa-edit me-1"></i>Edit
               </button>
@@ -158,6 +162,27 @@ async function saveUrl() {
   } catch (error) {
     console.error('Error saving URL:', error);
     showAlert('modalAlert', 'An error occurred while saving the URL', 'danger');
+  }
+}
+
+// Toggle Pin status
+async function togglePin(urlId) {
+  try {
+    const response = await fetch(`/api/urls/${urlId}/pin`, {
+      method: 'PUT',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+      await loadUrls(); // Reload to show the new order
+      showAlert('alertMessage', 'Pin status updated!', 'success');
+    } else {
+      const data = await response.json();
+      showAlert('alertMessage', data.error || 'Failed to update pin status', 'danger');
+    }
+  } catch (error) {
+    console.error('Error toggling pin:', error);
+    showAlert('alertMessage', 'An error occurred while updating the pin status', 'danger');
   }
 }
 

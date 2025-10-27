@@ -11,7 +11,7 @@ router.use(ensureAuthenticated);
 // GET /api/urls - Get all URLs for the logged-in user
 router.get('/urls', async (req, res) => {
   try {
-    const urls = await Url.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const urls = await Url.find({ userId: req.user._id }).sort({ pinned: -1, createdAt: -1 });
     res.json(urls);
   } catch (error) {
     console.error('Error fetching URLs:', error);
@@ -84,6 +84,26 @@ router.put(
     }
   }
 );
+
+// PUT /api/urls/:id/pin - Toggle pin status
+router.put('/urls/:id/pin', async (req, res) => {
+  try {
+    const url = await Url.findOne({ _id: req.params.id, userId: req.user._id });
+
+    if (!url) {
+      return res.status(404).json({ error: 'URL not found or you do not have permission to edit it' });
+    }
+
+    // Toggle the pinned status
+    url.pinned = !url.pinned;
+    await url.save();
+
+    res.json(url);
+  } catch (error) {
+    console.error('Error toggling pin status:', error);
+    res.status(500).json({ error: 'Failed to update pin status' });
+  }
+});
 
 // DELETE /api/urls/:id - Delete a URL
 router.delete('/urls/:id', async (req, res) => {

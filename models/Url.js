@@ -30,6 +30,10 @@ const urlSchema = new mongoose.Schema(
         },
         message: 'Please provide a valid URL'
       }
+    },
+    pinned: {
+      type: Boolean,
+      default: false
     }
   },
   {
@@ -38,9 +42,8 @@ const urlSchema = new mongoose.Schema(
 );
 
 // Index for efficient queries
-urlSchema.index({ userId: 1, createdAt: -1 });
+urlSchema.index({ userId: 1, pinned: -1, createdAt: -1 });
 
 const Url = mongoose.model('Url', urlSchema);
 
 export default Url;
-
