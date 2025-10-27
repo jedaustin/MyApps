@@ -68,7 +68,7 @@ class BookmarkManager {
     }
 
     generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        return Date.now().toString(36) + Math.random().toString(36).substring(2);
     }
 
     openModal(bookmark = null) {
@@ -166,25 +166,47 @@ class BookmarkManager {
         }
 
         this.bookmarksGrid.innerHTML = bookmarksToDisplay.map(bookmark => `
-            <div class="bookmark-card">
+            <div class="bookmark-card" data-bookmark-id="${this.escapeHtml(bookmark.id)}">
                 <h3>${this.escapeHtml(bookmark.name)}</h3>
                 <div class="url" title="${this.escapeHtml(bookmark.url)}">${this.escapeHtml(bookmark.url)}</div>
                 ${bookmark.description ? `<div class="description">${this.escapeHtml(bookmark.description)}</div>` : ''}
                 <div class="bookmark-actions">
-                    <button class="btn-edit" onclick="bookmarkManager.openModal(${this.escapeHtml(JSON.stringify(bookmark))})">Edit</button>
-                    <button class="btn-delete" onclick="bookmarkManager.deleteBookmark('${bookmark.id}')">Delete</button>
+                    <button class="btn-edit" data-bookmark-id="${this.escapeHtml(bookmark.id)}">Edit</button>
+                    <button class="btn-delete" data-bookmark-id="${this.escapeHtml(bookmark.id)}">Delete</button>
                 </div>
             </div>
         `).join('');
 
-        // Add click handlers to open bookmarks (excluding action buttons)
-        document.querySelectorAll('.bookmark-card').forEach((card, index) => {
+        // Add click handlers using event delegation
+        document.querySelectorAll('.bookmark-card').forEach((card) => {
+            const bookmarkId = card.dataset.bookmarkId;
+            const bookmark = this.bookmarks.find(b => b.id === bookmarkId);
+            
             card.addEventListener('click', (e) => {
                 // Don't open if clicking on buttons
                 if (!e.target.classList.contains('btn-edit') && 
                     !e.target.classList.contains('btn-delete')) {
-                    this.openBookmark(bookmarksToDisplay[index].url);
+                    this.openBookmark(bookmark.url);
                 }
+            });
+        });
+
+        // Add edit button handlers
+        document.querySelectorAll('.btn-edit').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const bookmarkId = btn.dataset.bookmarkId;
+                const bookmark = this.bookmarks.find(b => b.id === bookmarkId);
+                this.openModal(bookmark);
+            });
+        });
+
+        // Add delete button handlers
+        document.querySelectorAll('.btn-delete').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const bookmarkId = btn.dataset.bookmarkId;
+                this.deleteBookmark(bookmarkId);
             });
         });
     }
