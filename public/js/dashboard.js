@@ -16,7 +16,7 @@ async function loadUrls() {
 
     if (response.ok) {
       const data = await response.json();
-      urls = data.urls;
+      urls = data;
       displayUrls();
     } else {
       if (response.status === 401) {
@@ -45,8 +45,8 @@ function displayUrls() {
   container.style.display = 'block';
   emptyState.style.display = 'none';
 
-  container.innerHTML = urls.map(url => `
-    <div class="col-md-6 col-lg-4">
+  container.innerHTML = urls.map((url, index) => `
+    <div class="col-md-6 col-lg-4" style="animation-delay: ${index * 50}ms;">
       <div class="card url-card shadow-sm">
         <div class="card-body">
           <h5 class="card-title">
@@ -75,13 +75,6 @@ function displayUrls() {
       </div>
     </div>
   `).join('');
-
-  // Add fade-in animation
-  document.querySelectorAll('.url-card').forEach((card, index) => {
-    setTimeout(() => {
-      card.classList.add('fade-in');
-    }, index * 100);
-  });
 }
 
 // Open modal for adding new URL
@@ -204,4 +197,3 @@ function isValidURL(string) {
     return false;
   }
 }
-
