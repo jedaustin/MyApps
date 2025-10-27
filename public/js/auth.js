@@ -1,111 +1,98 @@
-// Authentication JavaScript
+/**
+ * Handles the registration form submission.
+ */
+function handleRegistration() {
+  const form = document.getElementById('register-form');
+  if (!form) return;
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Login form
-  const loginForm = document.getElementById('loginForm');
-  if (loginForm) {
-    loginForm.addEventListener('submit', handleLogin);
-  }
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorAlert = document.getElementById('error-alert');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const spinner = submitButton.querySelector('.spinner-border');
 
-  // Register form
-  const registerForm = document.getElementById('registerForm');
-  if (registerForm) {
-    registerForm.addEventListener('submit', handleRegister);
-  }
-});
+    // Reset UI
+    errorAlert.classList.add('d-none');
+    spinner.classList.remove('d-none');
+    submitButton.disabled = true;
 
-async function handleLogin(e) {
-  e.preventDefault();
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
 
-  const form = e.target;
-  if (!form.checkValidity()) {
-    form.classList.add('was-validated');
-    return;
-  }
+    try {
+      const response = await fetch('/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-  const formData = {
-    username: document.getElementById('username').value,
-    password: document.getElementById('password').value
-  };
+      const result = await response.json();
 
-  try {
-    const response = await fetch('/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
-      body: JSON.stringify(formData)
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      showAlert('alertMessage', 'Login successful! Redirecting...', 'success');
-      setTimeout(() => {
+      if (!response.ok) {
+        // Handle validation errors or other issues
+        const errorMessage = result.errors ? result.errors.map(err => err.msg).join(', ') : result.error;
+        errorAlert.textContent = errorMessage || 'An unknown error occurred.';
+        errorAlert.classList.remove('d-none');
+      } else {
+        // Successful registration, redirect to dashboard
         window.location.href = '/dashboard';
-      }, 1000);
-    } else {
-      showAlert('alertMessage', data.error || 'Login failed. Please try again.', 'danger');
+      }
+    } catch (error) {
+      console.error('Registration fetch error:', error);
+      errorAlert.textContent = 'A network error occurred. Please try again.';
+      errorAlert.classList.remove('d-none');
+    } finally {
+      // Re-enable button and hide spinner
+      spinner.classList.add('d-none');
+      submitButton.disabled = false;
     }
-  } catch (error) {
-    console.error('Login error:', error);
-    showAlert('alertMessage', 'An error occurred during login. Please try again.', 'danger');
-  }
+  });
 }
 
-async function handleRegister(e) {
-  e.preventDefault();
+/**
+ * Handles the login form submission.
+ */
+function handleLogin() {
+  const form = document.getElementById('login-form');
+  if (!form) return;
 
-  const form = e.target;
-  if (!form.checkValidity()) {
-    form.classList.add('was-validated');
-    return;
-  }
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorAlert = document.getElementById('error-alert');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const spinner = submitButton.querySelector('.spinner-border');
 
-  const formData = {
-    name: document.getElementById('name').value,
-    username: document.getElementById('username').value.toLowerCase(),
-    password: document.getElementById('password').value
-  };
+    // Reset UI
+    errorAlert.classList.add('d-none');
+    spinner.classList.remove('d-none');
+    submitButton.disabled = true;
 
-  try {
-    const response = await fetch('/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
-      body: JSON.stringify(formData)
-    });
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
 
-    const data = await response.json();
+    try {
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (response.ok) {
-      showAlert('alertMessage', 'Registration successful! Redirecting...', 'success');
-      setTimeout(() => {
+      if (response.ok) {
         window.location.href = '/dashboard';
-      }, 1000);
-    } else {
-      const errorMsg = data.error || data.errors?.[0]?.msg || 'Registration failed. Please try again.';
-      showAlert('alertMessage', errorMsg, 'danger');
+      } else {
+        errorAlert.textContent = 'Invalid username or password.';
+        errorAlert.classList.remove('d-none');
+      }
+    } catch (error) {
+      errorAlert.textContent = 'A network error occurred. Please try again.';
+      errorAlert.classList.remove('d-none');
+    } finally {
+      spinner.classList.add('d-none');
+      submitButton.disabled = false;
     }
-  } catch (error) {
-    console.error('Registration error:', error);
-    showAlert('alertMessage', 'An error occurred during registration. Please try again.', 'danger');
-  }
+  });
 }
-
-// Show alert helper function
-function showAlert(containerId, message, type = 'danger') {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  container.innerHTML = `
-    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  `;
-}
-
