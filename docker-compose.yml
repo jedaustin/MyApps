@@ -68,8 +68,10 @@ services:
       - "8081:8081"
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-changeme}@mongodb:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD:-admin}
+    env_file:
+      - .env
     depends_on:
       - mongodb
     networks:
@@ -86,4 +88,3 @@ volumes:
     driver: local
   mongodb_config:
     driver: local
-
