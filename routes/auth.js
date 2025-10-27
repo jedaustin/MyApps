@@ -99,7 +99,7 @@ router.post(
 router.post(
   '/login',
   [
-    body('username').trim().notEmpty().withMessage('Username is required'),
+    body('email').trim().isEmail().withMessage('A valid email is required'),
     body('password').notEmpty().withMessage('Password is required')
   ],
   passport.authenticate('local', { failureRedirect: '/login' }),
