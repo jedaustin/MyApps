@@ -12,6 +12,16 @@ export const generateToken = (userId) => {
   });
 };
 
+// --- Authentication Middleware ---
+export const ensureAuthenticated = (req, res, next) => {
+  // Passport adds the `isAuthenticated()` method to the request object.
+  // If the user is authenticated, the request will proceed.
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: 'Not authenticated. Please log in.' });
+};
+
 // --- Google OAuth 2.0 Strategy ---
 passport.use(
   new GoogleStrategy(
