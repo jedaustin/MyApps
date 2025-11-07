@@ -442,6 +442,12 @@ function openEditModal(urlId) {
   }
 
   renderCategoryCheckboxes(getUrlCategoryIds(url));
+
+  const modalElement = document.getElementById('urlModal');
+  if (modalElement) {
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modalInstance.show();
+  }
 }
 
 async function saveUrl() {
