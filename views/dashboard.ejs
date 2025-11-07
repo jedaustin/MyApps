@@ -35,11 +35,25 @@
     </nav>
 
     <div class="container mt-4">
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <h2>My URLs</h2>
+        <div class="row mb-4 g-3 align-items-center">
+            <div class="col-12 col-md-4 col-lg-3">
+                <h2 class="mb-0">My URLs</h2>
             </div>
-            <div class="col-md-6 text-end">
+            <div class="col-12 col-md-5 col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input
+                        type="search"
+                        class="form-control"
+                        id="searchInput"
+                        placeholder="Search by description or URL"
+                        aria-label="Search URLs"
+                    >
+                </div>
+            </div>
+            <div class="col-12 col-md-3 col-lg-4 text-md-end">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#urlModal" onclick="openAddModal()">
                     <i class="fas fa-plus me-2"></i>Add URL
                 </button>
@@ -57,8 +71,18 @@
 
         <div id="emptyState" class="text-center py-5" style="display: none;">
             <i class="fas fa-link fa-4x text-muted mb-3"></i>
-            <h4 class="text-muted">No URLs yet</h4>
-            <p class="text-muted">Click "Add URL" to create your first bookmark.</p>
+            <h4
+                class="text-muted"
+                id="emptyStateHeading"
+                data-default-text='No URLs yet'
+                data-search-text='No matching URLs'
+            >No URLs yet</h4>
+            <p
+                class="text-muted"
+                id="emptyStateSubheading"
+                data-default-text='Click "Add URL" to create your first bookmark.'
+                data-search-text='Try a different search term or add a new URL.'
+            >Click "Add URL" to create your first bookmark.</p>
         </div>
     </div>
 

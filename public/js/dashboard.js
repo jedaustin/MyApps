@@ -1,9 +1,15 @@
 // Dashboard JavaScript for URL management
 
 let urls = [];
+let filteredUrls = [];
 let editingUrlId = null;
+let searchTerm = '';
 
 document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+  }
   loadUrls();
 });
 
@@ -17,7 +23,7 @@ async function loadUrls() {
     if (response.ok) {
       const data = await response.json();
       urls = data;
-      displayUrls();
+      applyFilter();
     } else {
       if (response.status === 401) {
         window.location.href = '/login';
@@ -35,17 +41,46 @@ async function loadUrls() {
 function displayUrls() {
   const container = document.getElementById('urlsContainer');
   const emptyState = document.getElementById('emptyState');
+  const emptyStateHeading = document.getElementById('emptyStateHeading');
+  const emptyStateSubheading = document.getElementById('emptyStateSubheading');
 
-  if (urls.length === 0) {
+  if (!container || !emptyState) {
+    return;
+  }
+
+  const hasUrls = urls.length > 0;
+  const hasFilteredResults = filteredUrls.length > 0;
+  const isSearchActive = Boolean(searchTerm);
+
+  if (!hasFilteredResults) {
     container.style.display = 'none';
     emptyState.style.display = 'block';
+    container.innerHTML = '';
+
+    if (emptyStateHeading && emptyStateSubheading) {
+      if (isSearchActive && hasUrls) {
+        emptyStateHeading.textContent = emptyStateHeading.dataset.searchText || 'No matching URLs';
+        emptyStateSubheading.textContent =
+          emptyStateSubheading.dataset.searchText || 'Try a different search term or add a new URL.';
+      } else {
+        emptyStateHeading.textContent = emptyStateHeading.dataset.defaultText || 'No URLs yet';
+        emptyStateSubheading.textContent =
+          emptyStateSubheading.dataset.defaultText || 'Click "Add URL" to create your first bookmark.';
+      }
+    }
     return;
   }
 
   container.style.display = 'block';
   emptyState.style.display = 'none';
 
-  container.innerHTML = urls.map((url, index) => `
+  if (emptyStateHeading && emptyStateSubheading) {
+    emptyStateHeading.textContent = emptyStateHeading.dataset.defaultText || 'No URLs yet';
+    emptyStateSubheading.textContent =
+      emptyStateSubheading.dataset.defaultText || 'Click "Add URL" to create your first bookmark.';
+  }
+
+  container.innerHTML = filteredUrls.map((url, index) => `
     <div class="col-md-6 col-lg-4" style="animation-delay: ${index * 50}ms;">
       <div class="card url-card shadow-sm">
         <div class="card-body position-relative">
@@ -84,6 +119,25 @@ function displayUrls() {
       </div>
     </div>
   `).join('');
+}
+
+function handleSearch(event) {
+  searchTerm = event.target.value.trim().toLowerCase();
+  applyFilter();
+}
+
+function applyFilter() {
+  if (!searchTerm) {
+    filteredUrls = [...urls];
+  } else {
+    filteredUrls = urls.filter((url) => {
+      const description = (url.description || '').toLowerCase();
+      const targetUrl = (url.url || '').toLowerCase();
+      return description.includes(searchTerm) || targetUrl.includes(searchTerm);
+    });
+  }
+
+  displayUrls();
 }
 
 /**
