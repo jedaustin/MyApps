@@ -34,6 +34,13 @@ const urlSchema = new mongoose.Schema(
     pinned: {
       type: Boolean,
       default: false
+    },
+    categories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+      }
+    ]
     }
   },
   {
@@ -43,6 +50,7 @@ const urlSchema = new mongoose.Schema(
 
 // Index for efficient queries
 urlSchema.index({ userId: 1, pinned: -1, createdAt: -1 });
+urlSchema.index({ userId: 1, categories: 1 });
 
 const Url = mongoose.model('Url', urlSchema);
 

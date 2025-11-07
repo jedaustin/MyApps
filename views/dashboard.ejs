@@ -35,7 +35,7 @@
     </nav>
 
     <div class="container mt-4">
-        <div class="row mb-4 g-3 align-items-center">
+        <div class="row mb-3 g-3 align-items-center">
             <div class="col-12 col-md-4 col-lg-3">
                 <h2 class="mb-0">My URLs</h2>
             </div>
@@ -53,10 +53,27 @@
                     >
                 </div>
             </div>
-            <div class="col-12 col-md-3 col-lg-4 text-md-end">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#urlModal" onclick="openAddModal()">
-                    <i class="fas fa-plus me-2"></i>Add URL
-                </button>
+            <div class="col-12 col-md-3 col-lg-4">
+                <div class="d-flex flex-wrap justify-content-md-end gap-2">
+                    <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        onclick="openManageCategoriesModal()"
+                    >
+                        <i class="fas fa-tags me-2"></i>Manage Categories
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#urlModal" onclick="openAddModal()">
+                        <i class="fas fa-plus me-2"></i>Add URL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex flex-wrap align-items-center gap-2" id="categoryFilters">
+                    <span class="badge bg-light text-muted border">Loading categories...</span>
+                </div>
             </div>
         </div>
 
@@ -86,6 +103,49 @@
         </div>
     </div>
 
+    <!-- Manage Categories Modal -->
+    <div class="modal fade" id="manageCategoriesModal" tabindex="-1" aria-labelledby="manageCategoriesModalLabel">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="manageCategoriesModalLabel">Manage Categories</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="categoriesModalAlert"></div>
+                    <form id="addCategoryForm" class="row g-2 align-items-center">
+                        <div class="col">
+                            <label class="visually-hidden" for="newCategoryName">New Category Name</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="newCategoryName"
+                                placeholder="Add a category"
+                                maxlength="100"
+                            >
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Add
+                            </button>
+                        </div>
+                    </form>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Your Categories</h6>
+                        <small class="text-muted" id="categoriesCount"></small>
+                    </div>
+                    <ul class="list-group" id="manageCategoriesList">
+                        <li class="list-group-item text-muted text-center">Loading categories...</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- URL Modal (for Add/Edit) -->
     <div class="modal fade" id="urlModal" tabindex="-1">
         <div class="modal-dialog">
@@ -105,6 +165,31 @@
                         <div class="mb-3">
                             <label for="url" class="form-label">URL</label>
                             <input type="url" class="form-control" id="url" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label mb-0" for="categoryCheckboxes">Categories</label>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    id="manageCategoriesFromModal"
+                                >
+                                    <i class="fas fa-tags me-1"></i>Manage
+                                </button>
+                            </div>
+                            <div
+                                id="categoryCheckboxes"
+                                class="row gx-3 gy-2 mt-1"
+                                role="group"
+                                aria-label="Choose categories for this URL"
+                            >
+                                <div class="col-12">
+                                    <span class="text-muted small">No categories available yet.</span>
+                                </div>
+                            </div>
+                            <div class="form-text">
+                                Select one or more categories to help organize this link.
+                            </div>
                         </div>
                     </form>
                 </div>
