@@ -41,7 +41,6 @@ const urlSchema = new mongoose.Schema(
         ref: 'Category'
       }
     ]
-    }
   },
   {
     timestamps: true
