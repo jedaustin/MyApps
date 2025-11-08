@@ -3,11 +3,74 @@ body {
   background-color: #f8f9fa;
 }
 
+.btn,
+.dropdown-item {
+  min-height: 2.75rem;
+  padding: 0.75rem 1.15rem;
+  font-size: 1rem;
+}
+
+.btn-sm {
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+}
+
+.btn-group .btn + .btn {
+  margin-left: 0;
+}
+
+.btn-group,
+.d-grid {
+  gap: 0.75rem;
+}
+
+.form-control,
+.form-select,
+.form-check-input {
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.65rem;
+}
+
+.form-check-input {
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-right: 0.75rem;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.form-text {
+  margin-top: 0.35rem;
+}
+
+form .mb-3 {
+  margin-bottom: 1.25rem !important;
+}
+
 /* URL Card Animation */
 .url-card {
   opacity: 0;
   transform: translateY(20px);
   animation: fadeIn 0.5s ease-out forwards;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.url-card:focus-visible {
+  outline: 3px solid rgba(13, 110, 253, 0.4);
+  outline-offset: 2px;
+}
+
+.url-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.08);
 }
 
 @keyframes fadeIn {
@@ -103,14 +166,17 @@ body {
 
 #urlsContainer .url-card .card-body .action-buttons {
   margin-top: auto;
+  gap: 0.75rem;
 }
 
 #urlsContainer .url-card .btn {
   min-height: 2.75rem;
+  border-radius: 0.85rem;
 }
 
 #urlsContainer .url-card .btn-group .btn {
   min-height: 2.75rem;
+  border-radius: 0.75rem;
 }
 
 @media (max-width: 991.98px) {
@@ -142,6 +208,10 @@ body {
   #urlsContainer .url-card .btn-group {
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  #urlsContainer .url-card .btn-group {
+    gap: 0.75rem;
   }
 
   #urlsContainer .url-card .btn-group .btn {
@@ -213,6 +283,18 @@ body {
     font-size: 1.1rem;
   }
 }
+
+.action-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.action-group .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
 @media (max-width: 767.98px) {
   #categoryCheckboxes .category-checkbox-item {
     flex: 0 0 100%;
@@ -271,6 +353,24 @@ body {
 
 .dashboard-search {
   width: 100%;
+}
+
+.dashboard-search .input-group .form-control {
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+.dashboard-search .input-group-text {
+  min-width: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.dashboard-search .input-group-text i {
+  line-height: 1;
 }
 
 .dashboard-actions {
@@ -336,5 +436,16 @@ body {
 
   .dashboard-actions .dropdown-menu .dropdown-item {
     padding-block: 0.75rem;
+  }
+
+  .dashboard-search .input-group .form-control {
+    min-height: 3rem;
+    font-size: 1.05rem;
+    padding: 0.85rem 1.15rem;
+  }
+
+  .dashboard-search .input-group-text {
+    min-width: 3.25rem;
+    font-size: 1.25rem;
   }
 }

@@ -158,7 +158,13 @@ function displayUrls() {
     .map(
       (url, index) => `
     <div class="col-12 col-md-6 col-xl-4" style="animation-delay: ${index * 50}ms;">
-      <div class="card url-card shadow-sm">
+      <div
+        class="card url-card shadow-sm h-100"
+        role="button"
+        tabindex="0"
+        data-url="${encodeURIComponent(url.url)}"
+        aria-label="Launch ${escapeHtml(url.description)}"
+      >
         <div class="card-body position-relative">
           ${
             url.pinned
@@ -220,6 +226,44 @@ function displayUrls() {
   `
     )
     .join('');
+
+  initializeCardInteractions();
+}
+
+function initializeCardInteractions() {
+  const container = document.getElementById('urlsContainer');
+  if (!container) {
+    return;
+  }
+
+  const cards = container.querySelectorAll('.url-card');
+
+  cards.forEach(card => {
+    const targetUrl = card.dataset.url ? decodeURIComponent(card.dataset.url) : null;
+    if (!targetUrl) {
+      return;
+    }
+
+    const handleCardClick = event => {
+      if (event.target.closest('.action-buttons')) {
+        return;
+      }
+      launchUrl(targetUrl);
+    };
+
+    const handleCardKeydown = event => {
+      if (event.target.closest('.action-buttons')) {
+        return;
+      }
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        launchUrl(targetUrl);
+      }
+    };
+
+    card.addEventListener('click', handleCardClick);
+    card.addEventListener('keydown', handleCardKeydown);
+  });
 }
 
 function renderUrlCategories(url) {
