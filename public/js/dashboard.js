@@ -806,8 +806,8 @@ function renderCategoryCheckboxes(preservedSelection) {
   container.innerHTML = sortedCategories
     .map(
       category => `
-      <div class="col-12 col-sm-6">
-        <div class="form-check">
+      <div class="category-checkbox-item col-12 col-md-6">
+        <div class="form-check category-checkbox">
           <input
             class="form-check-input"
             type="checkbox"

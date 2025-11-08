@@ -21,3 +21,78 @@ body {
 .btn .spinner-border {
   display: none;
 }
+
+/* Responsive modal adjustments */
+#urlModal .modal-dialog,
+#manageCategoriesModal .modal-dialog {
+  max-width: min(640px, 95vw);
+}
+
+@media (max-width: 767.98px) {
+  #urlModal .modal-dialog,
+  #manageCategoriesModal .modal-dialog {
+    margin: 1rem auto;
+    width: 95vw;
+  }
+
+  #urlModal .modal-content,
+  #manageCategoriesModal .modal-content {
+    border-radius: 1rem;
+  }
+
+  #urlModal .modal-body,
+  #manageCategoriesModal .modal-body {
+    padding: 1.25rem;
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (max-width: 767.98px) {
+    #urlModal .modal-content,
+    #manageCategoriesModal .modal-content {
+      max-height: calc(100dvh - 2rem);
+    }
+
+    #urlModal .modal-body,
+    #manageCategoriesModal .modal-body {
+      max-height: calc(100dvh - 7.5rem);
+      overflow-y: auto;
+    }
+  }
+}
+
+#urlModal .modal-body,
+#manageCategoriesModal .modal-body {
+  overflow-y: auto;
+}
+
+/* Category checkbox layout */
+#categoryCheckboxes .category-checkbox-item {
+  margin-bottom: 0.5rem;
+}
+
+#categoryCheckboxes .category-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#categoryCheckboxes .category-checkbox .form-check-input {
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin: 0;
+}
+
+#categoryCheckboxes .category-checkbox .form-check-label {
+  flex: 1;
+  line-height: 1.4;
+}
+
+@media (max-width: 767.98px) {
+  #categoryCheckboxes .category-checkbox-item {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
