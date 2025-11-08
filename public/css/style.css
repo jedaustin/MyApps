@@ -218,4 +218,123 @@ body {
     flex: 0 0 100%;
     max-width: 100%;
   }
+
+  .dashboard-header {
+    gap: 1.25rem;
+  }
+
+  .dashboard-actions .add-url-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .dashboard-actions .dropdown {
+    width: 100%;
+  }
+
+  .dashboard-actions .action-menu-btn {
+    width: 100%;
+  }
+
+  .dashboard-actions .dropdown-menu {
+    width: 100%;
+  }
+
+  .dashboard-title {
+    align-items: flex-start;
+  }
+
+  .dashboard-title h2 {
+    font-size: 1.75rem;
+  }
+
+  .dashboard-search .input-group {
+    width: 100%;
+  }
+}
+
+.dashboard-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.dashboard-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.dashboard-search {
+  width: 100%;
+}
+
+.dashboard-actions {
+  width: 100%;
+}
+
+.dashboard-actions .add-url-btn span {
+  display: inline-block;
+}
+
+@media (min-width: 640px) {
+  .dashboard-header {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .dashboard-title {
+    align-items: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .dashboard-actions .add-url-btn {
+    width: auto;
+    justify-content: center;
+  }
+
+  .dashboard-header {
+    gap: 1.5rem;
+  }
+
+  .dashboard-title .manage-categories-link {
+    display: none !important;
+  }
+
+  .dashboard-actions .dropdown {
+    display: none;
+  }
+
+  .dashboard-actions .add-url-btn span {
+    display: inline;
+  }
+}
+
+@media (max-width: 420px) {
+  .dashboard-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .dashboard-title h2 {
+    font-size: 1.6rem;
+  }
+
+  .dashboard-actions .add-url-btn {
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .dashboard-actions .action-menu-btn {
+    padding: 0.75rem 1rem;
+  }
+
+  .dashboard-actions .dropdown-menu .dropdown-item {
+    padding-block: 0.75rem;
+  }
 }

@@ -35,11 +35,19 @@
     </nav>
 
     <div class="container mt-4">
-        <div class="row mb-3 g-3 align-items-center">
-            <div class="col-12 col-md-4 col-lg-3">
+        <div class="dashboard-header mb-3 g-3">
+            <div class="dashboard-title">
                 <h2 class="mb-0">My URLs</h2>
+                <button
+                    class="btn btn-link p-0 d-flex align-items-center gap-2 d-md-none manage-categories-link"
+                    type="button"
+                    onclick="openManageCategoriesModal()"
+                    aria-label="Manage categories"
+                >
+                    <i class="fas fa-tags"></i><span>Manage Categories</span>
+                </button>
             </div>
-            <div class="col-12 col-md-5 col-lg-5">
+            <div class="dashboard-search">
                 <div class="input-group">
                     <span class="input-group-text">
                         <i class="fas fa-search"></i>
@@ -53,18 +61,46 @@
                     >
                 </div>
             </div>
-            <div class="col-12 col-md-3 col-lg-4">
-                <div class="d-flex flex-wrap justify-content-md-end gap-2">
+            <div class="dashboard-actions">
+                <div class="d-flex flex-wrap flex-md-nowrap align-items-center justify-content-md-end gap-2">
                     <button
-                        class="btn btn-outline-secondary"
+                        class="btn btn-outline-secondary d-none d-md-inline-flex"
                         type="button"
                         onclick="openManageCategoriesModal()"
                     >
                         <i class="fas fa-tags me-2"></i>Manage Categories
                     </button>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#urlModal" onclick="openAddModal()">
-                        <i class="fas fa-plus me-2"></i>Add URL
+                    <button
+                        class="btn btn-primary add-url-btn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#urlModal"
+                        onclick="openAddModal()"
+                    >
+                        <i class="fas fa-plus me-2"></i><span>Add URL</span>
                     </button>
+                    <div class="dropdown d-md-none">
+                        <button
+                            class="btn btn-outline-secondary dropdown-toggle action-menu-btn"
+                            type="button"
+                            id="headerActionsMenu"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="headerActionsMenu">
+                            <li>
+                                <button class="dropdown-item" type="button" onclick="openManageCategoriesModal()">
+                                    <i class="fas fa-tags me-2"></i>Manage Categories
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" type="button" onclick="handleLogout()">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
