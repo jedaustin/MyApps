@@ -54,6 +54,29 @@ form .mb-3 {
   margin-bottom: 1.25rem !important;
 }
 
+.btn:focus-visible,
+.dropdown-item:focus-visible,
+.action-menu-btn:focus-visible,
+.action-group .btn:focus-visible,
+.launch-btn:focus-visible,
+.fab-add-url:focus-visible,
+.manage-categories-link:focus-visible,
+.add-url-button:focus-visible,
+.action-btn:focus-visible,
+.category-filters .form-check-input:focus-visible,
+.category-checkbox .form-check-input:focus-visible {
+  outline: 3px solid rgba(13, 110, 253, 0.45);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.2);
+}
+
+.category-filters .form-check-input:focus-visible + label,
+.category-checkbox .form-check-input:focus-visible + label {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+  border-radius: 0.75rem;
+  padding-inline: 0.35rem;
+}
+
 .pull-to-refresh-indicator {
   position: sticky;
   top: 0;
