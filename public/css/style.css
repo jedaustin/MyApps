@@ -90,6 +90,129 @@ body {
   line-height: 1.4;
 }
 
+#urlsContainer .url-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+#urlsContainer .url-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#urlsContainer .url-card .card-body .action-buttons {
+  margin-top: auto;
+}
+
+#urlsContainer .url-card .btn {
+  min-height: 2.75rem;
+}
+
+#urlsContainer .url-card .btn-group .btn {
+  min-height: 2.75rem;
+}
+
+@media (max-width: 991.98px) {
+  #urlsContainer .url-card .btn {
+    min-height: 3rem;
+  }
+
+  #urlsContainer .url-card .btn-group .btn {
+    min-height: 3rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  #urlsContainer .url-card {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #urlsContainer .url-card .card-body {
+    padding: 1.5rem;
+  }
+
+  #urlsContainer .url-card .action-buttons .btn {
+    font-size: 1rem;
+    padding-block: 0.875rem;
+  }
+
+  #urlsContainer .url-card .btn-group {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  #urlsContainer .url-card .btn-group .btn {
+    width: 100%;
+    border-radius: 0.75rem;
+  }
+
+  #urlsContainer .url-card .btn-group .btn + .btn {
+    margin-left: 0;
+  }
+
+  #urlsContainer .url-card .btn-group .btn i {
+    margin-right: 0.5rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  #urlsContainer .url-card .action-buttons .btn {
+    font-size: 0.95rem;
+  }
+
+  #urlsContainer .url-card .btn-group {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  #urlsContainer .url-card .btn-group .btn {
+    flex: 1 1 calc(50% - 0.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    padding-block: 0.75rem;
+    border-radius: 0.75rem;
+  }
+
+  #urlsContainer .url-card .btn-group .btn i {
+    margin: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  #urlsContainer .url-card .action-buttons .btn {
+    font-size: 0.9rem;
+  }
+
+  #urlsContainer .url-card .btn-group {
+    gap: 0.5rem;
+  }
+
+  #urlsContainer .url-card .btn-group .btn {
+    flex: 1 1 100%;
+  }
+
+  #urlsContainer .url-card .btn-group .btn .btn-label {
+    display: none;
+  }
+
+  #urlsContainer .url-card .btn-group .btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 999px;
+  }
+
+  #urlsContainer .url-card .btn-group .btn i {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
 @media (max-width: 767.98px) {
   #categoryCheckboxes .category-checkbox-item {
     flex: 0 0 100%;

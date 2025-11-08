@@ -157,7 +157,7 @@ function displayUrls() {
   container.innerHTML = filteredUrls
     .map(
       (url, index) => `
-    <div class="col-md-6 col-lg-4" style="animation-delay: ${index * 50}ms;">
+    <div class="col-12 col-md-6 col-xl-4" style="animation-delay: ${index * 50}ms;">
       <div class="card url-card shadow-sm">
         <div class="card-body position-relative">
           ${
@@ -180,19 +180,37 @@ function displayUrls() {
               <i class="fas fa-clock me-1"></i>${formatDate(url.createdAt)}
             </small>
           </p>
-          <div class="d-grid gap-2 mt-3">
-            <a href="javascript:void(0)" onclick="launchUrl('${url.url}')" class="btn btn-primary btn-lg">
-              <i class="fas fa-rocket me-2"></i>Launch
+          <div class="d-grid gap-3 mt-3 action-buttons">
+            <a href="javascript:void(0)" onclick="launchUrl('${url.url}')" class="btn btn-primary btn-lg launch-btn">
+              <i class="fas fa-rocket me-2"></i><span class="btn-label">Launch</span>
             </a>
-            <div class="btn-group">
-              <button class="btn btn-sm btn-outline-secondary w-100" onclick="togglePin('${url._id}')">
-                <i class="fas fa-thumbtack me-1"></i>${url.pinned ? 'Unpin' : 'Pin'}
+            <div class="btn-group w-100 action-group" role="group" aria-label="Manage URL actions">
+              <button
+                class="btn btn-outline-secondary w-100 action-btn"
+                onclick="togglePin('${url._id}')"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="${url.pinned ? 'Unpin this URL' : 'Pin this URL'}"
+              >
+                <i class="fas fa-thumbtack"></i><span class="btn-label">${url.pinned ? 'Unpin' : 'Pin'}</span>
               </button>
-              <button class="btn btn-sm btn-outline-secondary w-100" onclick="openEditModal('${url._id}')">
-                <i class="fas fa-edit me-1"></i>Edit
+              <button
+                class="btn btn-outline-secondary w-100 action-btn"
+                onclick="openEditModal('${url._id}')"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Edit URL"
+              >
+                <i class="fas fa-edit"></i><span class="btn-label">Edit</span>
               </button>
-              <button class="btn btn-sm btn-outline-danger w-100" onclick="deleteUrl('${url._id}')">
-                <i class="fas fa-trash me-1"></i>Delete
+              <button
+                class="btn btn-outline-danger w-100 action-btn"
+                onclick="deleteUrl('${url._id}')"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Delete URL"
+              >
+                <i class="fas fa-trash"></i><span class="btn-label">Delete</span>
               </button>
             </div>
           </div>
