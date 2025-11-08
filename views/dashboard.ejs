@@ -35,6 +35,10 @@
     </nav>
 
     <div class="container mt-4">
+        <div id="pullToRefreshIndicator" class="pull-to-refresh-indicator" aria-hidden="true">
+            <i class="fas fa-arrow-down me-2"></i><span>Pull to refresh</span>
+        </div>
+
         <div class="dashboard-header mb-3 g-3">
             <div class="dashboard-title">
                 <h2 class="mb-0">My URLs</h2>
@@ -48,7 +52,7 @@
                 </button>
             </div>
             <div class="dashboard-search">
-                <div class="input-group">
+                <div class="input-group search-bar">
                     <span class="input-group-text">
                         <i class="fas fa-search"></i>
                     </span>
@@ -62,7 +66,7 @@
                 </div>
             </div>
             <div class="dashboard-actions">
-                <div class="d-flex flex-wrap flex-md-nowrap align-items-center justify-content-md-end gap-2">
+                <div class="d-flex flex-wrap flex-md-nowrap align-items-center justify-content-md-end gap-2 header-actions">
                     <button
                         class="btn btn-outline-secondary d-none d-md-inline-flex"
                         type="button"
@@ -71,7 +75,7 @@
                         <i class="fas fa-tags me-2"></i>Manage Categories
                     </button>
                     <button
-                        class="btn btn-primary add-url-btn"
+                        class="btn btn-primary add-url-btn add-url-button"
                         data-bs-toggle="modal"
                         data-bs-target="#urlModal"
                         onclick="openAddModal()"
@@ -107,7 +111,7 @@
 
         <div class="row mb-4">
             <div class="col-12">
-                <div class="d-flex flex-wrap align-items-center gap-2" id="categoryFilters">
+                <div class="d-flex flex-wrap align-items-center gap-2 category-filters" id="categoryFilters">
                     <span class="badge bg-light text-muted border">Loading categories...</span>
                 </div>
             </div>
@@ -215,7 +219,7 @@
                             </div>
                             <div
                                 id="categoryCheckboxes"
-                                class="row gx-3 gy-2 mt-1"
+                                class="row gx-3 gy-2 mt-1 category-grid"
                                 role="group"
                                 aria-label="Choose categories for this URL"
                             >

@@ -9,6 +9,16 @@ let editingUrlId = null;
 let searchTerm = '';
 let availableCategoryFilterIds = [];
 let selectedCategoryIds = new Set();
+let isRefreshingFromPull = false;
+
+const pullToRefreshState = {
+  indicator: null,
+  active: false,
+  refreshing: false,
+  startY: 0,
+  currentY: 0,
+  threshold: 80
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput');
@@ -40,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Error during initial load:', error);
     showAlert('alertMessage', 'Failed to initialize dashboard data.', 'danger');
   });
+
+  setupPullToRefresh();
 });
 
 async function loadInitialData() {
@@ -105,6 +117,10 @@ async function loadUrls() {
   } catch (error) {
     console.error('Error loading URLs:', error);
     showAlert('alertMessage', 'An error occurred while loading URLs.', 'danger');
+  } finally {
+    if (isRefreshingFromPull) {
+      resetPullToRefresh();
+    }
   }
 }
 
@@ -186,7 +202,7 @@ function displayUrls() {
               <i class="fas fa-clock me-1"></i>${formatDate(url.createdAt)}
             </small>
           </p>
-          <div class="d-grid gap-3 mt-3 action-buttons">
+          <div class="d-grid gap-3 mt-3 action-buttons card-actions">
             <a href="javascript:void(0)" onclick="launchUrl('${url.url}')" class="btn btn-primary btn-lg launch-btn">
               <i class="fas fa-rocket me-2"></i><span class="btn-label">Launch</span>
             </a>
@@ -264,6 +280,120 @@ function initializeCardInteractions() {
     card.addEventListener('click', handleCardClick);
     card.addEventListener('keydown', handleCardKeydown);
   });
+}
+
+function setupPullToRefresh() {
+  if (!('ontouchstart' in window)) {
+    return;
+  }
+
+  const indicator = document.getElementById('pullToRefreshIndicator');
+  if (!indicator) {
+    return;
+  }
+
+  pullToRefreshState.indicator = indicator;
+
+  const onTouchStart = event => {
+    if (window.scrollY > 0 || pullToRefreshState.refreshing) {
+      return;
+    }
+
+    pullToRefreshState.startY = event.touches[0].clientY;
+    pullToRefreshState.currentY = pullToRefreshState.startY;
+    pullToRefreshState.active = true;
+
+    indicator.classList.add('visible');
+    indicator.classList.remove('refreshing');
+    indicator.setAttribute('aria-hidden', 'false');
+    updatePullIndicator('Pull to refresh', 'fa-arrow-down');
+  };
+
+  const onTouchMove = event => {
+    if (!pullToRefreshState.active) {
+      return;
+    }
+
+    pullToRefreshState.currentY = event.touches[0].clientY;
+    const delta = pullToRefreshState.currentY - pullToRefreshState.startY;
+
+    if (delta <= 0 || window.scrollY > 0) {
+      pullToRefreshState.active = false;
+      resetPullToRefresh();
+      return;
+    }
+
+    if (delta < pullToRefreshState.threshold) {
+      updatePullIndicator('Keep pulling…', 'fa-arrow-down');
+    } else {
+      updatePullIndicator('Release to refresh', 'fa-arrow-rotate-right');
+    }
+
+    event.preventDefault();
+  };
+
+  const onTouchEnd = async () => {
+    if (!pullToRefreshState.active) {
+      return;
+    }
+
+    const delta = pullToRefreshState.currentY - pullToRefreshState.startY;
+    pullToRefreshState.active = false;
+
+    if (delta >= pullToRefreshState.threshold && !pullToRefreshState.refreshing) {
+      pullToRefreshState.refreshing = true;
+      isRefreshingFromPull = true;
+      indicator.classList.add('visible', 'refreshing');
+      updatePullIndicator('Refreshing…', 'fa-circle-notch');
+      await loadUrls();
+    } else {
+      resetPullToRefresh();
+    }
+  };
+
+  const onTouchCancel = () => {
+    if (pullToRefreshState.active) {
+      pullToRefreshState.active = false;
+      resetPullToRefresh();
+    }
+  };
+
+  window.addEventListener('touchstart', onTouchStart, { passive: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: false });
+  window.addEventListener('touchend', onTouchEnd, { passive: true });
+  window.addEventListener('touchcancel', onTouchCancel, { passive: true });
+}
+
+function updatePullIndicator(message, iconClass) {
+  const indicator = pullToRefreshState.indicator;
+  if (!indicator) {
+    return;
+  }
+
+  const icon = indicator.querySelector('i');
+  const text = indicator.querySelector('span');
+
+  if (icon) {
+    icon.className = `fas ${iconClass} me-2`;
+  }
+
+  if (text) {
+    text.textContent = message;
+  }
+}
+
+function resetPullToRefresh() {
+  const indicator = pullToRefreshState.indicator;
+  if (!indicator) {
+    return;
+  }
+
+  indicator.classList.remove('visible', 'refreshing');
+  indicator.setAttribute('aria-hidden', 'true');
+  updatePullIndicator('Pull to refresh', 'fa-arrow-down');
+
+  isRefreshingFromPull = false;
+  pullToRefreshState.refreshing = false;
 }
 
 function renderUrlCategories(url) {

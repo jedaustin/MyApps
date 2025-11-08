@@ -54,6 +54,39 @@ form .mb-3 {
   margin-bottom: 1.25rem !important;
 }
 
+.pull-to-refresh-indicator {
+  position: sticky;
+  top: 0;
+  z-index: 1010;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #0d6efd;
+  background: linear-gradient(180deg, rgba(248, 249, 250, 0.95), rgba(248, 249, 250, 0));
+  padding: 0.75rem 0;
+  transform: translateY(-100%);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pull-to-refresh-indicator.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.pull-to-refresh-indicator.refreshing i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* URL Card Animation */
 .url-card {
   opacity: 0;
@@ -324,6 +357,92 @@ form .mb-3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 1.5rem auto;
+  }
+
+  .category-grid {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .url-card {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .card-actions {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card-actions .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.75rem;
+  }
+
+  .add-url-button {
+    width: 100%;
+  }
+
+  .category-filters {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    gap: 0.5rem;
+  }
+
+  .category-filters::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .category-filters::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 999px;
+  }
+
+  .category-filters::after {
+    content: '';
+    flex: 0 0 1px;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .search-bar .form-control {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .url-card {
+    margin: 0.75rem 0;
+  }
+
+  .url-card .card-body {
+    padding: 1.25rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
 }
 @media (max-width: 767.98px) {
   #categoryCheckboxes .category-checkbox-item {
