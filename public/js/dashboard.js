@@ -61,6 +61,7 @@ async function loadInitialData() {
 
 async function loadCategories() {
   try {
+    showSkeleton('categories');
     const response = await fetch('/api/categories', {
       credentials: 'include'
     });
@@ -74,6 +75,7 @@ async function loadCategories() {
       renderCategoryCheckboxes();
       renderManageCategoriesList();
       updateCategoriesCount();
+      hideSkeleton('categories');
     } else if (response.status === 401) {
       window.location.href = '/login';
     } else {
@@ -82,11 +84,14 @@ async function loadCategories() {
   } catch (error) {
     console.error('Error loading categories:', error);
     showAlert('alertMessage', 'An error occurred while loading categories.', 'danger');
+  } finally {
+    hideSkeleton('categories');
   }
 }
 
 async function loadUrls() {
   try {
+    showSkeleton('urls');
     const response = await fetch('/api/urls', {
       credentials: 'include'
     });
@@ -109,15 +114,17 @@ async function loadUrls() {
 
       renderCategoryFilters();
       applyFilter();
+      hideSkeleton('urls');
     } else if (response.status === 401) {
       window.location.href = '/login';
-    } else {
-      showAlert('alertMessage', 'Failed to load URLs. Please try again.', 'danger');
+      } else {
+        showAlert('alertMessage', 'Failed to load URLs. Please try again.', 'danger');
     }
   } catch (error) {
     console.error('Error loading URLs:', error);
     showAlert('alertMessage', 'An error occurred while loading URLs.', 'danger');
   } finally {
+    hideSkeleton('urls');
     if (isRefreshingFromPull) {
       resetPullToRefresh();
     }
@@ -129,6 +136,8 @@ function displayUrls() {
   const emptyState = document.getElementById('emptyState');
   const emptyStateHeading = document.getElementById('emptyStateHeading');
   const emptyStateSubheading = document.getElementById('emptyStateSubheading');
+
+  hideSkeleton("urls");
 
   if (!container || !emptyState) {
     return;
@@ -245,6 +254,51 @@ function displayUrls() {
     .join('');
 
   initializeCardInteractions();
+}
+
+function showSkeleton(type) {
+  if (type === 'urls') {
+    const skeleton = document.getElementById('urlsSkeleton');
+    const container = document.getElementById('urlsContainer');
+    if (skeleton && container) {
+      skeleton.hidden = false;
+      skeleton.style.display = '';
+      container.style.display = 'none';
+    }
+  }
+
+  if (type === 'categories') {
+    const skeleton = document.getElementById('categoryFiltersSkeleton');
+    const filters = document.getElementById('categoryFilters');
+    if (skeleton && filters) {
+      skeleton.hidden = false;
+      skeleton.style.display = '';
+      filters.style.visibility = 'hidden';
+    }
+  }
+}
+
+function hideSkeleton(type) {
+  if (type === 'urls') {
+    const skeleton = document.getElementById('urlsSkeleton');
+    const container = document.getElementById('urlsContainer');
+    if (skeleton && container) {
+      skeleton.hidden = true;
+      skeleton.style.display = 'none';
+      container.style.display = 'flex';
+      container.style.flexWrap = 'wrap';
+    }
+  }
+
+  if (type === 'categories') {
+    const skeleton = document.getElementById('categoryFiltersSkeleton');
+    const filters = document.getElementById('categoryFilters');
+    if (skeleton && filters) {
+      skeleton.hidden = true;
+      skeleton.style.display = 'none';
+      filters.style.visibility = 'visible';
+    }
+  }
 }
 
 function initializeCardInteractions() {

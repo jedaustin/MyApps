@@ -124,6 +124,12 @@
 
         <div class="row mb-4">
             <div class="col-12">
+                <div id="categoryFiltersSkeleton" class="category-filters-skeleton" aria-hidden="true" hidden>
+                    <span class="badge placeholder-glow"><span class="placeholder col-4"></span></span>
+                    <span class="badge placeholder-glow"><span class="placeholder col-3"></span></span>
+                    <span class="badge placeholder-glow"><span class="placeholder col-5"></span></span>
+                    <span class="badge placeholder-glow"><span class="placeholder col-2"></span></span>
+                </div>
                 <div class="d-flex flex-wrap align-items-center gap-2 category-filters" id="categoryFilters">
                     <span class="badge bg-light text-muted border">Loading categories...</span>
                 </div>
@@ -136,6 +142,42 @@
             <div class="col-12 text-center py-5">
                 <i class="fas fa-spinner fa-spin fa-3x text-muted"></i>
                 <p class="mt-3 text-muted">Loading URLs...</p>
+            </div>
+        </div>
+
+        <div id="urlsSkeleton" class="row urls-skeleton" aria-hidden="true" hidden>
+            <div class="col-12 col-md-6 col-xl-4 mb-4">
+                <div class="skeleton-card placeholder-glow">
+                    <div class="skeleton-card-header placeholder col-8"></div>
+                    <div class="placeholder col-10"></div>
+                    <div class="placeholder col-6"></div>
+                    <div class="skeleton-card-actions mt-3">
+                        <span class="placeholder col-5"></span>
+                        <span class="placeholder col-3"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4 mb-4">
+                <div class="skeleton-card placeholder-glow">
+                    <div class="skeleton-card-header placeholder col-7"></div>
+                    <div class="placeholder col-9"></div>
+                    <div class="placeholder col-4"></div>
+                    <div class="skeleton-card-actions mt-3">
+                        <span class="placeholder col-6"></span>
+                        <span class="placeholder col-4"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4 mb-4 d-none d-md-block">
+                <div class="skeleton-card placeholder-glow">
+                    <div class="skeleton-card-header placeholder col-6"></div>
+                    <div class="placeholder col-8"></div>
+                    <div class="placeholder col-5"></div>
+                    <div class="skeleton-card-actions mt-3">
+                        <span class="placeholder col-6"></span>
+                        <span class="placeholder col-4"></span>
+                    </div>
+                </div>
             </div>
         </div>
 

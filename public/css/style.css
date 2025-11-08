@@ -664,3 +664,53 @@ form .mb-3 {
     font-size: 1.2rem;
   }
 }
+
+.urls-skeleton {
+  margin-top: 1rem;
+}
+
+.skeleton-card {
+  border-radius: 1rem;
+  background-color: #fff;
+  padding: 1.25rem;
+  box-shadow: 0 0.75rem 2rem rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-card-header {
+  height: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.skeleton-card .placeholder {
+  border-radius: 999px;
+  min-height: 1.1rem;
+}
+
+.skeleton-card-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.category-filters-skeleton {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.category-filters-skeleton .badge {
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+}
+
+.category-filters-skeleton .placeholder {
+  border-radius: 999px;
+  min-height: 0.9rem;
+}
