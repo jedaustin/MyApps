@@ -109,6 +109,14 @@ form .mb-3 {
   box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.08);
 }
 
+.url-card.swipe-edit {
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.35);
+}
+
+.url-card.swipe-delete {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.35);
+}
+
 @keyframes fadeIn {
   to {
     opacity: 1;

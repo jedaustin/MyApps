@@ -179,6 +179,7 @@ function displayUrls() {
         role="button"
         tabindex="0"
         data-url="${encodeURIComponent(url.url)}"
+        data-card-id="${url._id}"
         aria-label="Launch ${escapeHtml(url.description)}"
       >
         <div class="card-body position-relative">
@@ -256,11 +257,23 @@ function initializeCardInteractions() {
 
   cards.forEach(card => {
     const targetUrl = card.dataset.url ? decodeURIComponent(card.dataset.url) : null;
-    if (!targetUrl) {
+    const cardId = card.dataset.cardId;
+    if (!targetUrl || !cardId) {
       return;
     }
 
+    const swipeData = {
+      startX: 0,
+      startY: 0,
+      direction: null,
+      handled: false
+    };
+
     const handleCardClick = event => {
+      if (card.dataset.swipeHandled === 'true') {
+        card.dataset.swipeHandled = 'false';
+        return;
+      }
       if (event.target.closest('.action-buttons')) {
         return;
       }
@@ -277,9 +290,66 @@ function initializeCardInteractions() {
       }
     };
 
+    const handleTouchStart = event => {
+      if (event.touches.length !== 1) {
+        return;
+      }
+
+      swipeData.startX = event.touches[0].clientX;
+      swipeData.startY = event.touches[0].clientY;
+      swipeData.direction = null;
+      swipeData.handled = false;
+      card.dataset.swipeHandled = 'false';
+    };
+
+    const handleTouchMove = event => {
+      if (event.touches.length !== 1 || swipeData.handled) {
+        return;
+      }
+
+      const currentX = event.touches[0].clientX;
+      const currentY = event.touches[0].clientY;
+      const deltaX = currentX - swipeData.startX;
+      const deltaY = currentY - swipeData.startY;
+
+      if (Math.abs(deltaX) < 35 || Math.abs(deltaX) < Math.abs(deltaY)) {
+        return;
+      }
+
+      swipeData.direction = deltaX > 0 ? 'right' : 'left';
+      swipeData.handled = true;
+      card.dataset.swipeHandled = 'true';
+
+      if (swipeData.direction === 'left') {
+        provideSwipeFeedback(card, 'delete');
+        setTimeout(() => deleteUrl(cardId), 120);
+      } else if (swipeData.direction === 'right') {
+        provideSwipeFeedback(card, 'edit');
+        setTimeout(() => openEditModal(cardId), 120);
+      }
+
+      event.preventDefault();
+    };
+
+    const handleTouchEnd = () => {
+      swipeData.direction = null;
+    };
+
     card.addEventListener('click', handleCardClick);
     card.addEventListener('keydown', handleCardKeydown);
+    card.addEventListener('touchstart', handleTouchStart, { passive: true });
+    card.addEventListener('touchmove', handleTouchMove, { passive: false });
+    card.addEventListener('touchend', handleTouchEnd, { passive: true });
+    card.addEventListener('touchcancel', handleTouchEnd, { passive: true });
   });
+}
+
+function provideSwipeFeedback(card, action) {
+  const className = action === 'delete' ? 'swipe-delete' : 'swipe-edit';
+  card.classList.add(className);
+  setTimeout(() => {
+    card.classList.remove(className);
+  }, 600);
 }
 
 function setupPullToRefresh() {
