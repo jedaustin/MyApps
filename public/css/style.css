@@ -492,6 +492,14 @@ form .mb-3 {
   .dashboard-search .input-group {
     width: 100%;
   }
+
+  .fab-add-url {
+    width: 56px;
+    height: 56px;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    font-size: 1.35rem;
+  }
 }
 
 .dashboard-header {
@@ -538,6 +546,21 @@ form .mb-3 {
   display: inline-block;
 }
 
+.fab-add-url {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1.25rem 2.5rem rgba(13, 110, 253, 0.3);
+  z-index: 1050;
+  font-size: 1.5rem;
+}
+
 @media (min-width: 640px) {
   .dashboard-header {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr);
@@ -568,6 +591,10 @@ form .mb-3 {
 
   .dashboard-actions .add-url-btn span {
     display: inline;
+  }
+
+  .fab-add-url {
+    display: none !important;
   }
 }
 
@@ -603,6 +630,14 @@ form .mb-3 {
 
   .dashboard-search .input-group-text {
     min-width: 3.25rem;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+  }
+
+  .fab-add-url {
+    width: 48px;
+    height: 48px;
+    right: 1rem;
+    bottom: 1rem;
+    font-size: 1.2rem;
   }
 }
