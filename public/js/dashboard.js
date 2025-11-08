@@ -177,8 +177,8 @@ function displayUrls() {
               ${escapeHtml(url.description)}
             </a>
           </h5>
-          <p class="card-text text-muted small">
-            <i class="fas fa-globe me-1"></i>${escapeHtml(url.url)}
+          <p class="card-text text-muted small url-display">
+            <i class="fas fa-globe me-1"></i><span>${escapeHtml(url.url)}</span>
           </p>
           ${renderUrlCategories(url)}
           <p class="card-text">
