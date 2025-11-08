@@ -486,18 +486,8 @@ form .mb-3 {
   }
 
   .dashboard-actions .add-url-btn {
-    width: 100%;
-    justify-content: center;
     padding: 0.875rem 1.25rem;
     font-size: 1rem;
-  }
-
-  .dashboard-actions .dropdown {
-    width: 100%;
-  }
-
-  .dashboard-actions .action-menu-btn {
-    width: 100%;
   }
 
   .dashboard-actions .dropdown-menu {
@@ -562,6 +552,16 @@ form .mb-3 {
 }
 
 .dashboard-actions {
+  width: 100%;
+}
+
+.dashboard-actions .add-url-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.dashboard-actions .dropdown,
+.dashboard-actions .action-menu-btn {
   width: 100%;
 }
 
