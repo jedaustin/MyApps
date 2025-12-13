@@ -330,6 +330,19 @@ router.delete('/categories/:id', async (req, res) => {
   }
 });
 
+// Helper function to escape HTML
+function escapeHtml(text) {
+  if (!text) return '';
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
 // Export endpoints
 router.get('/export/:format', async (req, res) => {
   try {
@@ -464,8 +477,85 @@ router.get('/export/:format', async (req, res) => {
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}.csv"`);
       res.send('\ufeff' + csv); // BOM for Excel compatibility
+    } else if (format === 'json') {
+      // JSON export for backup/restore and programmatic access
+      const exportData = {
+        version: '1.0',
+        exported: new Date().toISOString(),
+        totalUrls: urls.length,
+        urls: urls.map(url => ({
+          description: url.description || 'Untitled',
+          url: url.url,
+          categories: url.categories && url.categories.length > 0 ? url.categories.map(cat => cat.name) : [],
+          pinned: url.pinned || false,
+          createdAt: url.createdAt,
+          updatedAt: url.updatedAt
+        }))
+      };
+
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}.json"`);
+      res.json(exportData);
+    } else if (format === 'html') {
+      // HTML (Netscape Bookmark Format) for browser import compatibility
+      let html = `<!DOCTYPE NETSCAPE-Bookmark-file-1>
+<!-- This is an automatically generated file.
+     It will be read and overwritten.
+     DO NOT EDIT! -->
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+<TITLE>Bookmarks</TITLE>
+<H1>Bookmarks</H1>
+<DL><p>
+`;
+
+      // Group URLs by category for better organization
+      // Add each URL to its first category only to avoid duplicates
+      const categorizedUrls = {};
+      const uncategorizedUrls = [];
+
+      urls.forEach(url => {
+        if (url.categories && url.categories.length > 0) {
+          // Add URL to its first category only to avoid duplicates
+          const firstCategory = url.categories[0].name;
+          if (!categorizedUrls[firstCategory]) {
+            categorizedUrls[firstCategory] = [];
+          }
+          categorizedUrls[firstCategory].push(url);
+        } else {
+          uncategorizedUrls.push(url);
+        }
+      });
+
+      // Add categorized URLs
+      Object.keys(categorizedUrls).sort().forEach(categoryName => {
+        html += `    <DT><H3 ADD_DATE="${Math.floor(Date.now() / 1000)}" LAST_MODIFIED="${Math.floor(Date.now() / 1000)}">${escapeHtml(categoryName)}</H3>\n`;
+        html += `    <DL><p>\n`;
+        categorizedUrls[categoryName].forEach(url => {
+          const addDate = Math.floor(new Date(url.createdAt).getTime() / 1000);
+          const description = escapeHtml(url.description || url.url);
+          const urlValue = escapeHtml(url.url);
+          html += `        <DT><A HREF="${urlValue}" ADD_DATE="${addDate}"${url.pinned ? ' ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="' : ''}>${description}</A>\n`;
+        });
+        html += `    </DL><p>\n`;
+      });
+
+      // Add uncategorized URLs
+      if (uncategorizedUrls.length > 0) {
+        uncategorizedUrls.forEach(url => {
+          const addDate = Math.floor(new Date(url.createdAt).getTime() / 1000);
+          const description = escapeHtml(url.description || url.url);
+          const urlValue = escapeHtml(url.url);
+          html += `    <DT><A HREF="${urlValue}" ADD_DATE="${addDate}"${url.pinned ? ' ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="' : ''}>${description}</A>\n`;
+        });
+      }
+
+      html += `</DL><p>\n`;
+
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}.html"`);
+      res.send(html);
     } else {
-      return res.status(400).json({ error: 'Invalid export format. Supported formats: pdf, markdown, csv' });
+      return res.status(400).json({ error: 'Invalid export format. Supported formats: pdf, markdown, csv, json, html' });
     }
   } catch (error) {
     console.error('Error exporting URLs:', error);
