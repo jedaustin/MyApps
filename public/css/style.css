@@ -665,6 +665,22 @@ form .mb-3 {
   }
 }
 
+/* Export button styling */
+#exportDropdown {
+  min-height: 2.75rem;
+}
+
+#exportStatus {
+  min-height: 2.75rem;
+}
+
+@media (max-width: 767.98px) {
+  #exportDropdown {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .urls-skeleton {
   margin-top: 1rem;
 }

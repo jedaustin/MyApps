@@ -330,4 +330,147 @@ router.delete('/categories/:id', async (req, res) => {
   }
 });
 
+// Export endpoints
+router.get('/export/:format', async (req, res) => {
+  try {
+    const { format } = req.params;
+    const { categoryIds, searchTerm } = req.query;
+
+    // Build query based on filters
+    const query = { userId: req.user._id };
+
+    // Apply category filter if provided
+    if (categoryIds && categoryIds !== 'all') {
+      const categoryIdArray = Array.isArray(categoryIds) ? categoryIds : categoryIds.split(',');
+      if (categoryIdArray.length > 0 && !categoryIdArray.includes('__UNCATEGORIZED__')) {
+        query.categories = { $in: categoryIdArray };
+      } else if (categoryIdArray.includes('__UNCATEGORIZED__')) {
+        query.$or = [
+          { categories: { $in: categoryIdArray.filter(id => id !== '__UNCATEGORIZED__') } },
+          { categories: { $size: 0 } },
+          { categories: { $exists: false } }
+        ];
+      }
+    }
+
+    // Fetch URLs
+    let urls = await Url.find(query)
+      .populate({ path: 'categories', select: 'name' })
+      .sort({ pinned: -1, createdAt: -1 })
+      .lean();
+
+    // Apply search filter if provided
+    if (searchTerm && searchTerm.trim()) {
+      const searchLower = searchTerm.trim().toLowerCase();
+      urls = urls.filter(
+        url =>
+          (url.description || '').toLowerCase().includes(searchLower) ||
+          (url.url || '').toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Generate export based on format
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    const filename = `weblauncher-export-${timestamp}`;
+
+    if (format === 'pdf') {
+      const PDFDocument = (await import('pdfkit')).default;
+      const doc = new PDFDocument({ margin: 50, size: 'LETTER' });
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}.pdf"`);
+
+      doc.pipe(res);
+
+      doc.fontSize(20).text('WebLauncher Export', { align: 'center' });
+      doc.moveDown();
+      doc.fontSize(12).text(`Exported: ${new Date().toLocaleString()}`, { align: 'center' });
+      doc.moveDown(2);
+
+      if (urls.length === 0) {
+        doc.fontSize(14).text('No URLs to export.', { align: 'center' });
+      } else {
+        urls.forEach((url, index) => {
+          if (index > 0) {
+            doc.moveDown();
+          }
+
+          doc.fontSize(14).font('Helvetica-Bold').text(url.description || 'Untitled', { continued: false });
+          doc.fontSize(10).font('Helvetica').fillColor('blue').text(url.url, { link: url.url, underline: true });
+          doc.fillColor('black');
+
+          if (url.categories && url.categories.length > 0) {
+            const categoryNames = url.categories.map(cat => cat.name).join(', ');
+            doc.fontSize(9).fillColor('gray').text(`Categories: ${categoryNames}`);
+            doc.fillColor('black');
+          }
+
+          if (url.pinned) {
+            doc.fontSize(9).fillColor('blue').text('📌 Pinned');
+            doc.fillColor('black');
+          }
+
+          doc.fontSize(8).fillColor('gray').text(`Created: ${new Date(url.createdAt).toLocaleDateString()}`);
+          doc.fillColor('black');
+        });
+      }
+
+      doc.end();
+    } else if (format === 'markdown') {
+      let markdown = '# WebLauncher Export\n\n';
+      markdown += `**Exported:** ${new Date().toLocaleString()}\n\n`;
+      markdown += `**Total URLs:** ${urls.length}\n\n`;
+      markdown += '---\n\n';
+
+      if (urls.length === 0) {
+        markdown += '*No URLs to export.*\n';
+      } else {
+        urls.forEach((url, index) => {
+          markdown += `## ${index + 1}. ${url.description || 'Untitled'}\n\n`;
+          markdown += `**URL:** [${url.url}](${url.url})\n\n`;
+
+          if (url.categories && url.categories.length > 0) {
+            const categoryNames = url.categories.map(cat => cat.name).join(', ');
+            markdown += `**Categories:** ${categoryNames}\n\n`;
+          }
+
+          if (url.pinned) {
+            markdown += '**Status:** 📌 Pinned\n\n';
+          }
+
+          markdown += `**Created:** ${new Date(url.createdAt).toLocaleDateString()}\n\n`;
+          markdown += '---\n\n';
+        });
+      }
+
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}.md"`);
+      res.send(markdown);
+    } else if (format === 'csv') {
+      const csvRows = ['Description,URL,Categories,Pinned,Created'];
+
+      urls.forEach(url => {
+        const description = (url.description || 'Untitled').replace(/"/g, '""');
+        const urlValue = (url.url || '').replace(/"/g, '""');
+        const categories = url.categories && url.categories.length > 0 ? url.categories.map(cat => cat.name).join('; ') : '';
+        const pinned = url.pinned ? 'Yes' : 'No';
+        const created = new Date(url.createdAt).toLocaleDateString();
+
+        csvRows.push(`"${description}","${urlValue}","${categories}","${pinned}","${created}"`);
+      });
+
+      const csv = csvRows.join('\n');
+
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}.csv"`);
+      res.send('\ufeff' + csv); // BOM for Excel compatibility
+    } else {
+      return res.status(400).json({ error: 'Invalid export format. Supported formats: pdf, markdown, csv' });
+    }
+  } catch (error) {
+    console.error('Error exporting URLs:', error);
+    res.status(500).json({ error: 'Failed to export URLs' });
+  }
+});
+
 export default router;

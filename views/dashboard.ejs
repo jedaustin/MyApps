@@ -136,6 +136,46 @@
             </div>
         </div>
 
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-outline-primary dropdown-toggle"
+                            type="button"
+                            id="exportDropdown"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            aria-label="Export selected URLs"
+                        >
+                            <i class="fas fa-download me-2"></i>Export Selected
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <li>
+                                <button class="dropdown-item" type="button" onclick="exportUrls('pdf')">
+                                    <i class="fas fa-file-pdf me-2 text-danger"></i>PDF
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" type="button" onclick="exportUrls('markdown')">
+                                    <i class="fas fa-file-alt me-2 text-primary"></i>Markdown
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" type="button" onclick="exportUrls('csv')">
+                                    <i class="fas fa-file-csv me-2 text-success"></i>CSV
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="exportStatus" class="d-none align-items-center gap-2">
+                        <span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>
+                        <small class="text-muted">Generating export...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="alertMessage"></div>
 
         <div id="urlsContainer" class="row">

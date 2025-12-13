@@ -1215,6 +1215,83 @@ function clearContainer(containerId) {
   }
 }
 
+// Export functionality
+async function exportUrls(format) {
+  const exportStatus = document.getElementById('exportStatus');
+  const exportDropdown = document.getElementById('exportDropdown');
+
+  if (!exportStatus || !exportDropdown) {
+    return;
+  }
+
+  // Get current filter state
+  const categoryIds = Array.from(selectedCategoryIds).join(',');
+  const searchValue = searchTerm || '';
+
+  // Build query parameters
+  const params = new URLSearchParams({
+    categoryIds: categoryIds || 'all',
+    searchTerm: searchValue
+  });
+
+  try {
+    // Show loading state
+    exportStatus.classList.remove('d-none');
+    exportStatus.classList.add('d-flex');
+    exportDropdown.disabled = true;
+
+    // Make request
+    const response = await fetch(`/api/export/${format}?${params.toString()}`, {
+      credentials: 'include',
+      method: 'GET'
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Export failed with status ${response.status}`);
+    }
+
+    // Get filename from Content-Disposition header or generate one
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = `weblauncher-export-${new Date().toISOString().slice(0, 10)}.${format}`;
+
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+      if (filenameMatch) {
+        filename = filenameMatch[1];
+      }
+    }
+
+    // Get blob and create download link
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    // Show success message
+    showAlert('alertMessage', `Export completed! Downloading ${filename}...`, 'success');
+  } catch (error) {
+    console.error('Export error:', error);
+    showAlert('alertMessage', `Export failed: ${error.message}`, 'danger');
+  } finally {
+    // Hide loading state
+    exportStatus.classList.add('d-none');
+    exportStatus.classList.remove('d-flex');
+    exportDropdown.disabled = false;
+
+    // Close dropdown
+    const dropdownInstance = bootstrap.Dropdown.getInstance(exportDropdown);
+    if (dropdownInstance) {
+      dropdownInstance.hide();
+    }
+  }
+}
+
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;

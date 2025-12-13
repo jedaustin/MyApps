@@ -23,52 +23,57 @@ export const ensureAuthenticated = (req, res, next) => {
 };
 
 // --- Google OAuth 2.0 Strategy ---
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        // Find existing user by Google ID
-        let user = await User.findOne({ googleId: profile.id });
+// Only initialize Google OAuth if credentials are provided
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          // Find existing user by Google ID
+          let user = await User.findOne({ googleId: profile.id });
 
-        if (user) {
-          return done(null, user);
+          if (user) {
+            return done(null, user);
+          }
+
+          // If no user, find by email to link accounts
+          const googleEmail = profile.emails?.[0]?.value;
+          if (!googleEmail) {
+            return done(new Error('Google account has no email address.'), null);
+          }
+
+          user = await User.findOne({ email: googleEmail });
+
+          if (user) {
+            // Link Google ID to existing local account
+            user.googleId = profile.id;
+            await user.save();
+            return done(null, user);
+          }
+
+          // If no user exists at all, create a new one
+          const newUser = await User.create({
+            googleId: profile.id,
+            name: profile.displayName,
+            email: googleEmail,
+            username: googleEmail // Use email as username
+          });
+
+          return done(null, newUser);
+        } catch (error) {
+          return done(error, false);
         }
-
-        // If no user, find by email to link accounts
-        const googleEmail = profile.emails?.[0]?.value;
-        if (!googleEmail) {
-          return done(new Error('Google account has no email address.'), null);
-        }
-
-        user = await User.findOne({ email: googleEmail });
-
-        if (user) {
-          // Link Google ID to existing local account
-          user.googleId = profile.id;
-          await user.save();
-          return done(null, user);
-        }
-
-        // If no user exists at all, create a new one
-        const newUser = await User.create({
-          googleId: profile.id,
-          name: profile.displayName,
-          email: googleEmail,
-          username: googleEmail // Use email as username
-        });
-
-        return done(null, newUser);
-      } catch (error) {
-        return done(error, false);
       }
-    }
-  )
-);
+    )
+  );
+} else {
+  console.warn('Google OAuth credentials not provided. Google login will be disabled.');
+}
 
 // --- Local Strategy (Email/Password) ---
 passport.use(

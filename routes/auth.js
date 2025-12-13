@@ -6,29 +6,40 @@ import bcrypt from 'bcryptjs';
 
 const router = express.Router();
 
-// Google OAuth routes
-router.get(
-  '/google',
-  passport.authenticate('google', {
-    scope: ['profile', 'email']
-  })
-);
+// Google OAuth routes (only available if credentials are configured)
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
+  router.get(
+    '/google',
+    passport.authenticate('google', {
+      scope: ['profile', 'email']
+    })
+  );
 
-router.get(
-  '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    // Generate JWT token
-    const token = generateToken(req.user._id);
-    
-    // Store token in session
-    req.session.token = token;
-    req.session.userId = req.user._id;
-    
-    // Successful authentication, redirect to dashboard
-    res.redirect('/dashboard');
-  }
-);
+  router.get(
+    '/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+      // Generate JWT token
+      const token = generateToken(req.user._id);
+      
+      // Store token in session
+      req.session.token = token;
+      req.session.userId = req.user._id;
+      
+      // Successful authentication, redirect to dashboard
+      res.redirect('/dashboard');
+    }
+  );
+} else {
+  // Return 501 (Not Implemented) if Google OAuth is not configured
+  router.get('/google', (req, res) => {
+    res.status(501).json({ error: 'Google OAuth is not configured on this server' });
+  });
+  
+  router.get('/google/callback', (req, res) => {
+    res.status(501).json({ error: 'Google OAuth is not configured on this server' });
+  });
+}
 
 // Local registration
 router.post(
